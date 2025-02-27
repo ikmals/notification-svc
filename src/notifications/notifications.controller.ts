@@ -1,18 +1,45 @@
-import { Controller, Get, Param, Post, Req } from '@nestjs/common';
-import { Request } from 'express';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { NotificationsService } from './notifications.service';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { UpdateNotificationDto } from './dto/update-notification.dto';
 
 @Controller('notifications')
 export class NotificationsController {
+  constructor(private readonly notificationsService: NotificationsService) {}
+
   @Post()
-  send(@Req() request: Request): string {
-    return `This action sends a new notification for ${request.get('userId')}`;
+  create(@Body() createNotificationDto: CreateNotificationDto) {
+    return this.notificationsService.create(createNotificationDto);
   }
 
-  @Get(':userId/:channel')
-  findAll(
-    @Param('userId') userId: string,
-    @Param('channel') channel: string,
-  ): string {
-    return `Fetching notifications for user ${userId} and channel ${channel}`;
+  @Get()
+  findAll() {
+    return this.notificationsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.notificationsService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateNotificationDto: UpdateNotificationDto,
+  ) {
+    return this.notificationsService.update(+id, updateNotificationDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.notificationsService.remove(+id);
   }
 }
