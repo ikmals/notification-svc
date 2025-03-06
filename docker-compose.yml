@@ -13,6 +13,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     restart: unless-stopped
+    command: npm run start:dev
 
   mongodb:
     container_name: mongodb

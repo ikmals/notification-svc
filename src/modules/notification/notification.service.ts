@@ -4,6 +4,7 @@ import { NotificationType } from '../../common/enums/notification-type.enum';
 import { ChannelType } from '../../common/enums/channel-type.enum';
 import { UserService } from '../user/user.service';
 import { CompanyService } from '../company/company.service';
+import { ChannelService } from '../channel/channel.service';
 
 @Injectable()
 export class NotificationService {
@@ -20,21 +21,33 @@ export class NotificationService {
   constructor(
     private readonly userService: UserService,
     private readonly companyService: CompanyService,
+    private readonly channelService: ChannelService,
   ) {}
 
-  create(dto: CreateNotificationDto) {
-    const channels = NotificationService.NOTIFICATION_CHANNELS[dto.type] || [];
+  async create(dto: CreateNotificationDto) {
+    const channelTypes =
+      NotificationService.NOTIFICATION_CHANNELS[dto.type] || [];
 
-    if (channels.length === 0) {
-      this.logger.warn(`No channels found for: ${dto.type}`);
+    if (channelTypes.length === 0) {
+      this.logger.warn(`No channel types found for: ${dto.type}`);
       return;
     }
 
-    for (const channel of channels) {
-      if (this.isSubscribed(dto, channel)) {
-        this.logger.log(`Sending a notification via ${channel}`);
+    const promises: Promise<void>[] = [];
+    for (const channelType of channelTypes) {
+      if (this.isSubscribed(dto, channelType)) {
+        const channel = this.channelService.getChannel(channelType);
+
+        if (!channel) {
+          this.logger.warn(`No channel found for: ${channelType}`);
+          return;
+        }
+
+        promises.push(channel.send(dto.userId, dto.companyId, dto.type));
       }
     }
+
+    await Promise.all(promises);
 
     return `This action sends a new ${dto.type} notification for user ${dto.userId} in ${dto.companyId}`;
   }
