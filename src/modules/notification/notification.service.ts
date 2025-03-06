@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { NotificationType } from '../../common/enums/notification-type.enum';
 import { ChannelType } from '../../common/enums/channel-type.enum';
 import { UserService } from '../user/user.service';
 import { CompanyService } from '../company/company.service';
@@ -8,14 +7,6 @@ import { ChannelService } from '../channel/channel.service';
 
 @Injectable()
 export class NotificationService {
-  private static readonly NOTIFICATION_CHANNELS: Record<
-    NotificationType,
-    ChannelType[]
-  > = {
-    [NotificationType.LEAVE_BALANCE_REMINDER]: [ChannelType.UI],
-    [NotificationType.MONTHLY_PAYSLIP]: [ChannelType.EMAIL],
-    [NotificationType.HAPPY_BIRTHDAY]: [ChannelType.EMAIL, ChannelType.UI],
-  };
   private readonly logger = new Logger(NotificationService.name);
 
   constructor(
@@ -25,9 +16,7 @@ export class NotificationService {
   ) {}
 
   async create(dto: CreateNotificationDto) {
-    const channelTypes =
-      NotificationService.NOTIFICATION_CHANNELS[dto.type] || [];
-
+    const channelTypes = this.channelService.getChannelTypes(dto.type);
     if (channelTypes.length === 0) {
       this.logger.warn(`No channel types found for: ${dto.type}`);
       return;
