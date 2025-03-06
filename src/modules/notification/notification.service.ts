@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { NotificationType } from '../../common/enums/notification-type.enum';
 import { ChannelType } from '../../common/enums/channel-type.enum';
-import { UserService } from '../users/user.service';
+import { UserService } from '../user/user.service';
 import { CompanyService } from '../company/company.service';
 
 @Injectable()
