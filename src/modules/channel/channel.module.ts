@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { EmailChannel } from './implementations/email.channel';
-import { UIChannel } from './implementations/ui.channel';
+import { EmailChannel } from './providers/email.channel';
+import { UIChannel } from './providers/ui.channel';
 import { ChannelService } from './channel.service';
 
 @Module({

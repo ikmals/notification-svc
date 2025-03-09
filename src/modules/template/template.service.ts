@@ -18,7 +18,7 @@ export class TemplateService {
         content: `Dear {{firstName}}, your leave balance is low. Please review your leave plan.`,
       },
       [ChannelType.UI]: {
-        subject: `Leave Balance Reminder`,
+        content: `Leave Balance Reminder`,
       },
     },
     [NotificationType.MONTHLY_PAYSLIP]: {
@@ -27,7 +27,7 @@ export class TemplateService {
         content: `Hello {{firstName}}, your payslip is now available.`,
       },
       [ChannelType.UI]: {
-        subject: `Monthly Payslip Available`,
+        content: `Monthly Payslip Available`,
       },
     },
     [NotificationType.HAPPY_BIRTHDAY]: {
@@ -36,7 +36,7 @@ export class TemplateService {
         content: `All of us at {{companyName}} wish you a very happy birthday!`,
       },
       [ChannelType.UI]: {
-        subject: `Happy Birthday, {{firstName}}!`,
+        content: `Happy Birthday, {{firstName}}!`,
       },
     },
   };

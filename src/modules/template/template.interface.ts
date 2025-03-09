@@ -1,6 +1,6 @@
 export interface Template {
-  subject: string;
-  content?: string;
+  subject?: string;
+  content: string;
 }
 
 export interface Message {

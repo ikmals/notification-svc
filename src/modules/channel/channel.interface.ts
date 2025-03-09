@@ -1,9 +1,5 @@
-import { NotificationType } from '../../common/enums/notification-type.enum';
+import { Message } from '../template/template.interface';
 
 export interface Channel {
-  send(
-    userId: string,
-    companyId: string,
-    notificationType: NotificationType,
-  ): Promise<void>;
+  send(userId: string, companyId: string, message: Message): void;
 }

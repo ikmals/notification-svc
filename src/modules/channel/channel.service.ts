@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Channel } from './channel.interface';
-import { EmailChannel } from './implementations/email.channel';
-import { UIChannel } from './implementations/ui.channel';
+import { EmailChannel } from './providers/email.channel';
+import { UIChannel } from './providers/ui.channel';
 import { ChannelType } from '../../common/enums/channel-type.enum';
 import { NotificationType } from '../../common/enums/notification-type.enum';
 

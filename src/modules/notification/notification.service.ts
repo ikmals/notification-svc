@@ -18,7 +18,7 @@ export class NotificationService {
     private readonly templateService: TemplateService,
   ) {}
 
-  async create(dto: CreateNotificationDto) {
+  create(dto: CreateNotificationDto) {
     const channelTypes = this.channelService.getChannelTypes(dto.type);
     if (channelTypes.length === 0) {
       this.logger.warn(`No channel types found for: ${dto.type}`);
@@ -28,36 +28,24 @@ export class NotificationService {
     const company = this.companyService.getCompanyById(dto.companyId);
     const user = this.userService.getUserById(dto.userId);
 
-    const promises: Promise<void>[] = [];
     for (const channelType of channelTypes) {
       if (this.isSubscribed(dto, channelType)) {
         const channel = this.channelService.getChannel(channelType);
-        if (!channel) {
-          this.logger.warn(`No channel found for: ${channelType}`);
-          return;
-        }
-
-        const templateVariables: Variable = {
-          firstName: user.name,
-          companyName: company.name,
-        };
 
         const template = this.templateService.get(
           company,
           channelType,
           dto.type,
         );
+        const variable: Variable = {
+          firstName: user.name,
+          companyName: company.name,
+        };
+        const message = this.templateService.render(template, variable);
 
-        const message = this.templateService.render(
-          template,
-          templateVariables,
-        );
-
-        promises.push(channel.send(dto.userId, dto.companyId, dto.type));
+        channel.send(dto.userId, dto.companyId, message);
       }
     }
-
-    await Promise.all(promises);
 
     return `This action sends a new ${dto.type} notification for user ${dto.userId} in ${dto.companyId}`;
   }
