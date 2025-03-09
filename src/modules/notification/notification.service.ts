@@ -6,6 +6,7 @@ import { CompanyService } from '../company/company.service';
 import { ChannelService } from '../channel/channel.service';
 import { TemplateService } from '../template/template.service';
 import { Variable } from '../template/template.interface';
+import { NotificationRepository } from './notification.repository';
 
 @Injectable()
 export class NotificationService {
@@ -16,9 +17,10 @@ export class NotificationService {
     private readonly companyService: CompanyService,
     private readonly channelService: ChannelService,
     private readonly templateService: TemplateService,
+    private readonly notificationRepository: NotificationRepository,
   ) {}
 
-  create(dto: CreateNotificationDto) {
+  async create(dto: CreateNotificationDto) {
     const channelTypes = this.channelService.getChannelTypes(dto.type);
     if (channelTypes.length === 0) {
       this.logger.warn(`No channel types found for: ${dto.type}`);
@@ -44,6 +46,15 @@ export class NotificationService {
         const message = this.templateService.render(template, variable);
 
         channel.send(dto.userId, dto.companyId, message);
+
+        await this.notificationRepository.create(
+          user.id,
+          company.id,
+          dto.type,
+          channelType,
+          message.subject,
+          message.content,
+        );
       }
     }
 
