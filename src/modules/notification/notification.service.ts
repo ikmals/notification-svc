@@ -61,8 +61,8 @@ export class NotificationService {
     return `This action sends a new ${dto.type} notification for user ${dto.userId} in ${dto.companyId}`;
   }
 
-  findAll(userId: string, channel: string) {
-    return `Fetching notifications for user ${userId} and channel ${channel}`;
+  async findAll(userId: string, channel: string) {
+    return this.notificationRepository.find({ userId, channel });
   }
 
   private isSubscribed(

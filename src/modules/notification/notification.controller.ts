@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { Notification } from './entities/notification.entity';
 
 @Controller('notifications')
 export class NotificationController {
@@ -20,11 +21,11 @@ export class NotificationController {
     return this.notificationsService.create(createNotificationDto);
   }
 
-  @Get(':userId/:channel')
+  @Get(':userId/channels/:channel')
   findAll(
     @Param('userId') userId: string,
     @Param('channel') channel: string,
-  ): string {
+  ): Promise<Notification[]> {
     return this.notificationsService.findAll(userId, channel);
   }
 }
