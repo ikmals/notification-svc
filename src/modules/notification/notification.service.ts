@@ -4,6 +4,8 @@ import { ChannelType } from '../../common/enums/channel-type.enum';
 import { UserService } from '../user/user.service';
 import { CompanyService } from '../company/company.service';
 import { ChannelService } from '../channel/channel.service';
+import { TemplateService } from '../template/template.service';
+import { Variable } from '../template/template.interface';
 
 @Injectable()
 export class NotificationService {
@@ -13,6 +15,7 @@ export class NotificationService {
     private readonly userService: UserService,
     private readonly companyService: CompanyService,
     private readonly channelService: ChannelService,
+    private readonly templateService: TemplateService,
   ) {}
 
   async create(dto: CreateNotificationDto) {
@@ -22,15 +25,33 @@ export class NotificationService {
       return;
     }
 
+    const company = this.companyService.getCompanyById(dto.companyId);
+    const user = this.userService.getUserById(dto.userId);
+
     const promises: Promise<void>[] = [];
     for (const channelType of channelTypes) {
       if (this.isSubscribed(dto, channelType)) {
         const channel = this.channelService.getChannel(channelType);
-
         if (!channel) {
           this.logger.warn(`No channel found for: ${channelType}`);
           return;
         }
+
+        const templateVariables: Variable = {
+          firstName: user.name,
+          companyName: company.name,
+        };
+
+        const template = this.templateService.get(
+          company,
+          channelType,
+          dto.type,
+        );
+
+        const message = this.templateService.render(
+          template,
+          templateVariables,
+        );
 
         promises.push(channel.send(dto.userId, dto.companyId, dto.type));
       }
