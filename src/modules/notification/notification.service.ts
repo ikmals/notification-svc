@@ -5,7 +5,7 @@ import { UserService } from '../user/user.service';
 import { CompanyService } from '../company/company.service';
 import { ChannelService } from '../channel/channel.service';
 import { TemplateService } from '../template/template.service';
-import { Variable } from '../template/template.interface';
+import { Variable } from '../../common/interfaces/template.interface';
 import { NotificationRepository } from './notification.repository';
 
 @Injectable()

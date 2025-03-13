@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { ChannelProvider } from './channel.interface';
+import { ChannelProvider } from '../../common/interfaces/channel.interface';
 import { EmailChannel } from './providers/email.channel';
 import { UIChannel } from './providers/ui.channel';
 import { ChannelType } from '../../common/enums/channel-type.enum';

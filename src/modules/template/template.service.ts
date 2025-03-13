@@ -6,7 +6,11 @@ import {
 import { NotificationType } from '../../common/enums/notification-type.enum';
 import { ChannelType } from '../../common/enums/channel-type.enum';
 import { Company } from '../company/company.service';
-import { Message, Template, Variable } from './template.interface';
+import {
+  Message,
+  Template,
+  Variable,
+} from '../../common/interfaces/template.interface';
 
 @Injectable()
 export class TemplateService {

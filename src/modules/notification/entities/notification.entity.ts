@@ -13,7 +13,7 @@ export class Notification extends Document {
   type: string;
 
   @Prop({ required: true })
-  channel?: string;
+  channel: string;
 
   @Prop()
   subject?: string;
