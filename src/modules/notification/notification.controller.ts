@@ -8,7 +8,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
+import {
+  NotificationResponse,
+  SendNotificationRequest,
+  SendNotificationResponse,
+} from './dto/send-notification.dto';
 import { Notification } from './entities/notification.entity';
 
 @Controller('notifications')
@@ -17,8 +21,18 @@ export class NotificationController {
 
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  create(@Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationsService.create(createNotificationDto);
+  async send(
+    @Body() sendNotificationRequest: SendNotificationRequest,
+  ): Promise<SendNotificationResponse> {
+    const notifications = await this.notificationsService.create(
+      sendNotificationRequest,
+    );
+
+    return {
+      notifications: notifications.map(
+        (n) => n.toJSON() as NotificationResponse,
+      ),
+    };
   }
 
   @Get(':userId/channels/:channel')

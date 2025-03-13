@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { NotificationResponse } from '../dto/send-notification.dto';
 
 @Schema({ timestamps: true })
 export class Notification extends Document {
@@ -23,3 +24,13 @@ export class Notification extends Document {
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);
+
+NotificationSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret._id;
+    delete ret.__v;
+    delete ret.createdAt;
+    delete ret.updatedAt;
+    return ret;
+  },
+});

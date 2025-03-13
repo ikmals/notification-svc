@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { NotificationType } from '../../../common/enums/notification-type.enum';
 
-export class CreateNotificationDto {
+export class SendNotificationRequest {
   @IsString()
   @IsNotEmpty()
   userId: string;
@@ -12,4 +12,17 @@ export class CreateNotificationDto {
 
   @IsEnum(NotificationType)
   type: NotificationType;
+}
+
+export interface SendNotificationResponse {
+  notifications: NotificationResponse[];
+}
+
+export interface NotificationResponse {
+  userId: string;
+  companyId: string;
+  type: string;
+  channel: string;
+  subject?: string;
+  content?: string;
 }

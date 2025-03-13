@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
+import { SendNotificationRequest } from './dto/send-notification.dto';
 import { ChannelType } from '../../common/enums/channel-type.enum';
 import { UserService } from '../user/user.service';
 import { CompanyService } from '../company/company.service';
 import { ChannelService } from '../channel/channel.service';
 import { TemplateService } from '../template/template.service';
 import { NotificationRepository } from './notification.repository';
-import { InternalServerErrorException } from '@nestjs/common';
 import { NotificationType } from '../../common/enums/notification-type.enum';
 
 describe('NotificationService', () => {
@@ -78,7 +77,7 @@ describe('NotificationService', () => {
 
   describe('create', () => {
     it('should process notification and call dependencies for subscribed channels', async () => {
-      const dto: CreateNotificationDto = {
+      const dto: SendNotificationRequest = {
         userId: fakeUser.id,
         companyId: fakeCompany.id,
         type: NotificationType.HAPPY_BIRTHDAY,
@@ -109,13 +108,11 @@ describe('NotificationService', () => {
         fakeRenderedMessage.subject,
         fakeRenderedMessage.content,
       );
-      expect(result).toEqual(
-        `This action sends a new ${dto.type} notification for user ${dto.userId} in ${dto.companyId}`,
-      );
+      expect(result).toEqual([{}]);
     });
 
     describe('error cases', () => {
-      const dto: CreateNotificationDto = {
+      const dto: SendNotificationRequest = {
         userId: fakeUser.id,
         companyId: fakeCompany.id,
         type: NotificationType.HAPPY_BIRTHDAY,

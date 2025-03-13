@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
+import {
+  SendNotificationRequest,
+  SendNotificationResponse,
+  NotificationResponse,
+} from './dto/send-notification.dto';
 import { NotificationType } from '../../common/enums/notification-type.enum';
 
 describe('NotificationController', () => {
@@ -29,32 +33,57 @@ describe('NotificationController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should call notificationService.create with provided dto and return a string message', async () => {
-      const dto: CreateNotificationDto = {
+  describe('send', () => {
+    it('should call notificationService.create with provided dto and return a notification response array', async () => {
+      const dto: SendNotificationRequest = {
         userId: 'user1',
         companyId: 'company1',
         type: NotificationType.HAPPY_BIRTHDAY,
       };
-      const expectedMessage = `This action sends a new ${dto.type} notification for user ${dto.userId} in ${dto.companyId}`;
-      mockNotificationService.create.mockResolvedValue(expectedMessage);
 
-      const result = await controller.create(dto);
+      const fakeNotification = {
+        toJSON: () =>
+          ({
+            userId: 'user1',
+            companyId: 'company1',
+            type: NotificationType.HAPPY_BIRTHDAY,
+            channel: 'email',
+            subject: 'Subject',
+            content: 'Content',
+          }) as NotificationResponse,
+      };
+
+      const expectedResponse: SendNotificationResponse = {
+        notifications: [
+          {
+            userId: 'user1',
+            companyId: 'company1',
+            type: NotificationType.HAPPY_BIRTHDAY,
+            channel: 'email',
+            subject: 'Subject',
+            content: 'Content',
+          },
+        ],
+      };
+
+      mockNotificationService.create.mockResolvedValue([fakeNotification]);
+
+      const result = await controller.send(dto);
 
       expect(notificationService.create).toHaveBeenCalledWith(dto);
-      expect(result).toEqual(expectedMessage);
+      expect(result).toEqual(expectedResponse);
     });
 
     describe('negative cases', () => {
       it('should throw an error if notificationService.create throws an error', async () => {
-        const dto: CreateNotificationDto = {
+        const dto: SendNotificationRequest = {
           userId: 'user1',
           companyId: 'company1',
           type: NotificationType.HAPPY_BIRTHDAY,
         };
         const error = new Error('Internal error');
         mockNotificationService.create.mockRejectedValueOnce(error);
-        await expect(controller.create(dto)).rejects.toThrow('Internal error');
+        await expect(controller.send(dto)).rejects.toThrow('Internal error');
       });
     });
   });
