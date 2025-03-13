@@ -4,9 +4,9 @@ import { NotificationService } from './notification.service';
 import {
   SendNotificationRequest,
   SendNotificationResponse,
-  NotificationResponse,
 } from './dto/send-notification.dto';
 import { NotificationType } from '../../common/enums/notification-type.enum';
+import { NotificationResponse } from './dto/notification.dto';
 
 describe('NotificationController', () => {
   let controller: NotificationController;
@@ -88,27 +88,41 @@ describe('NotificationController', () => {
     });
   });
 
-  describe('findAll', () => {
+  describe('get', () => {
     it('should call notificationService.findAll with provided userId and channel and return the result', async () => {
       const userId = 'user1';
       const channel = 'email';
-      const notifications = [
-        {
-          id: 'notification1',
-          userId,
-          companyId: 'company1',
-          type: NotificationType.HAPPY_BIRTHDAY,
-          channel,
-          subject: 'Subject',
-          content: 'Content',
-        },
-      ];
-      mockNotificationService.findAll.mockResolvedValue(notifications);
+      const notification = {
+        toJSON: () =>
+          ({
+            userId: 'user1',
+            companyId: 'company1',
+            type: NotificationType.HAPPY_BIRTHDAY,
+            channel: 'email',
+            subject: 'Subject',
+            content: 'Content',
+          }) as NotificationResponse,
+      };
 
-      const result = await controller.findAll(userId, channel);
+      mockNotificationService.findAll.mockResolvedValue([notification]);
+
+      const result = await controller.get({ userId, channel });
+
+      const expectedResponse: SendNotificationResponse = {
+        notifications: [
+          {
+            userId: 'user1',
+            companyId: 'company1',
+            type: NotificationType.HAPPY_BIRTHDAY,
+            channel: 'email',
+            subject: 'Subject',
+            content: 'Content',
+          },
+        ],
+      };
 
       expect(notificationService.findAll).toHaveBeenCalledWith(userId, channel);
-      expect(result).toEqual(notifications);
+      expect(result).toEqual(expectedResponse);
     });
 
     describe('negative cases', () => {
@@ -117,7 +131,7 @@ describe('NotificationController', () => {
         const channel = 'email';
         const error = new Error('Internal error');
         mockNotificationService.findAll.mockRejectedValueOnce(error);
-        await expect(controller.findAll(userId, channel)).rejects.toThrow(
+        await expect(controller.get({ userId, channel })).rejects.toThrow(
           'Internal error',
         );
       });

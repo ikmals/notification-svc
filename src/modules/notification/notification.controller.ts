@@ -9,11 +9,15 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import {
-  NotificationResponse,
   SendNotificationRequest,
   SendNotificationResponse,
 } from './dto/send-notification.dto';
 import { Notification } from './entities/notification.entity';
+import { NotificationResponse } from './dto/notification.dto';
+import {
+  GetNotificationsRequest,
+  GetNotificationsResponse,
+} from './dto/get-notifications.dto';
 
 @Controller('notifications')
 export class NotificationController {
@@ -36,10 +40,18 @@ export class NotificationController {
   }
 
   @Get(':userId/channels/:channel')
-  findAll(
-    @Param('userId') userId: string,
-    @Param('channel') channel: string,
-  ): Promise<Notification[]> {
-    return this.notificationsService.findAll(userId, channel);
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async get(
+    @Param() params: GetNotificationsRequest,
+  ): Promise<GetNotificationsResponse> {
+    const notifications = await this.notificationsService.findAll(
+      params.userId,
+      params.channel,
+    );
+    return {
+      notifications: notifications.map(
+        (n) => n.toJSON() as NotificationResponse,
+      ),
+    };
   }
 }
