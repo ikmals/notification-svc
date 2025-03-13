@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { ChannelType } from '../../common/enums/channel-type.enum';
 import { UserService } from '../user/user.service';
@@ -22,17 +26,13 @@ export class NotificationService {
 
   async create(dto: CreateNotificationDto) {
     const channelTypes = this.channelService.getChannelTypes(dto.type);
-    if (channelTypes.length === 0) {
-      this.logger.warn(`No channel types found for: ${dto.type}`);
-      return;
-    }
-
     const company = this.companyService.getCompanyById(dto.companyId);
     const user = this.userService.getUserById(dto.userId);
 
     for (const channelType of channelTypes) {
       if (this.isSubscribed(dto, channelType)) {
-        const channel = this.channelService.getChannel(channelType);
+        const channelProvider =
+          this.channelService.getChannelProvider(channelType);
 
         const template = this.templateService.get(
           company,
@@ -45,7 +45,7 @@ export class NotificationService {
         };
         const message = this.templateService.render(template, variable);
 
-        channel.send(dto.userId, dto.companyId, message);
+        channelProvider.send(dto.userId, dto.companyId, message);
 
         await this.notificationRepository.create(
           user.id,

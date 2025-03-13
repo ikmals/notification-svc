@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { NotificationType } from '../../common/enums/notification-type.enum';
 import { ChannelType } from '../../common/enums/channel-type.enum';
 import { Company } from '../company/company.service';
@@ -48,14 +52,16 @@ export class TemplateService {
   ): Template {
     const templatesByType = TemplateService.TEMPLATE_MAP[type];
     if (!templatesByType) {
-      throw new Error(`No template defined for notification type: ${type}`);
+      this.logger.error(`No template defined for notification type: ${type}`);
+      throw new InternalServerErrorException();
     }
 
     const template = templatesByType[channel];
     if (!template) {
-      throw new Error(
+      this.logger.error(
         `No template defined for channel ${channel} and notification type ${type}`,
       );
+      throw new InternalServerErrorException();
     }
 
     return template;
