@@ -37,8 +37,14 @@ export class NotificationRepository {
   }
 
   async find(predicate: NotificationPredicate): Promise<Notification[]> {
-    const query: Record<string, string> = {};
+    const query = this.convertPredicateToQuery(predicate);
+    return this.notificationModel.find(query).exec();
+  }
 
+  convertPredicateToQuery(
+    predicate: NotificationPredicate,
+  ): Record<string, string> {
+    const query: Record<string, string> = {};
     if (predicate.userId) {
       query.userId = predicate.userId;
     }
@@ -51,7 +57,6 @@ export class NotificationRepository {
     if (predicate.channel) {
       query.channel = predicate.channel;
     }
-
-    return this.notificationModel.find(query).exec();
+    return query;
   }
 }
