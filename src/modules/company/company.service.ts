@@ -1,11 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ChannelType } from '../../common/enums/channel-type.enum';
-
-export interface Company {
-  id: string;
-  name: string;
-  subscribedChannels: ChannelType[];
-}
+import { Company } from '../../common/interfaces/company.interface';
 
 @Injectable()
 export class CompanyService {

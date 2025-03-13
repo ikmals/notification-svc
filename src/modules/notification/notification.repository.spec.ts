@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   NotificationRepository,
-  NotificationPredicate,
+
 } from './notification.repository';
 import { getModelToken } from '@nestjs/mongoose';
 import { Notification } from './entities/notification.entity';
+import { NotificationPredicate } from '../../common/interfaces/notification.interface';
 
 describe('NotificationRepository', () => {
   let repository: NotificationRepository;

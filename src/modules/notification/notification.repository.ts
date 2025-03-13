@@ -2,13 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Notification } from './entities/notification.entity';
-
-export interface NotificationPredicate {
-  userId?: string;
-  companyId?: string;
-  type?: string;
-  channel?: string;
-}
+import { NotificationPredicate } from '../../common/interfaces/notification.interface';
 
 @Injectable()
 export class NotificationRepository {
