@@ -58,10 +58,6 @@ export class NotificationService {
       }
     }
 
-    this.logger.log(
-      `This action sends a new ${dto.type} notification for user ${dto.userId} in ${dto.companyId}`,
-    );
-
     return await Promise.all(notifications);
   }
 
